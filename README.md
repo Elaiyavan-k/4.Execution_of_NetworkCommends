@@ -25,8 +25,58 @@ This commands includes
 <BR>
 • Other IP Commands e.g. show ip route etc.
 <BR>
+## Program:
+## Server.py
+
+```
+import socket
+from pythonping import ping
+
+# Create server socket
+s = socket.socket()
+s.bind(('localhost', 8000))
+s.listen(5)
+print("Server is running and waiting for connection...")
+
+c, addr = s.accept()
+print(f"Connected to {addr}")
+
+while True:
+    hostname = c.recv(1024).decode().strip()
+    if not hostname:
+        print("Client disconnected.")
+        break
+
+   try:
+        result = ping(hostname, count=2, timeout=2, verbose=False)
+        c.send(str(result).encode())
+    except Exception as e:
+        c.send(f"Error: {str(e)}".encode())
+
+c.close()
+s.close()
+```
+## Cilent.py
+```
+import socket
+
+s = socket.socket()
+s.connect(('localhost', 8000))
+
+while True:
+    ip = input("Enter the website you want to ping (or 'exit' to quit): ").strip()
+    if ip.lower() == 'exit':
+        print("Closing connection...")
+        break
+
+    s.send(ip.encode())
+    print(s.recv(4096).decode())
+
+s.close()
+```
 
 ## Output
+<img width="1856" height="1102" alt="image" src="https://github.com/user-attachments/assets/db36fe46-2416-48d6-bb61-b5fc6f449f3b" />
 
 ## Result
 Thus Execution of Network commands Performed 
